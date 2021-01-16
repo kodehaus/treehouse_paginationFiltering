@@ -18,6 +18,8 @@ Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
 */
 
+
+
 function showPage(studentData, pageParam){
    const startIndex = (pageParam * studentsPerPageCount) - studentsPerPageCount;
    const endIndex = (pageParam * studentsPerPageCount);
@@ -29,28 +31,21 @@ function showPage(studentData, pageParam){
       if(i >= startIndex && i < endIndex){
         const student = studentData[i];
 
-        //create the needed DOM elements
-        const li = createElement('li','className|student-item cf');
-        const div = createElement('div','className|student-details');
-        const img = createElement('img', 'className|avatar',`src|${student.picture.large}`, `alt|${student.name.first}'s Profile Picture`);
-        const h3 = createElement('h3',`textContent|${student.name.first} ${student.name.last}`);
-        const span = createElement('span',`className|email`, `textContent|${student.email}`);
-        const joinedDiv = createElement('div','className|joined-details');
-        const dateSpan = createElement('span', 'className|date',`textContent|${student.registered.date}`);
-
-        //Stitch the elements together
-        li.appendChild(div);
-        div.appendChild(img);
-        div.appendChild(h3);
-        div.appendChild(span);
-
-        li.appendChild(joinedDiv);
-        joinedDiv.appendChild(dateSpan);
-        studentListDiv.appendChild(li);
+        const html = `
+               <li class="student-item cf">
+                     <div class="student-details">
+                        <img class="avatar" src="${student.picture.large}" alt="${student.name.first}'s Profile Picture">
+                        <h3>${student.name.first} ${student.name.last}</h3>
+                        <span class="email">${student.email}</span>
+                     </div>
+                     <div class="joined-details">
+                        <span class="date">${student.registered.date}</span>
+                     </div>
+               </li>`
+        studentListDiv.insertAdjacentHTML('beforeend',html);
       }
    }
 }
-
 
 //This function will create an html element and set properties as needed, can handle a variable number of arguments
 //const div2 = createElement('div','className|student-details');
