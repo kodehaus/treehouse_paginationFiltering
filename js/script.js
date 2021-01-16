@@ -11,8 +11,9 @@ For assistance:
    Reach out in your Slack community: https://treehouse-fsjs-102.slack.com/app_redirect?channel=unit-2
 */
 const studentsPerPageCount = 9;
-showPage(data,2);
-
+const linkListUL = document.querySelector('ul.link-list');
+const headerDiv = document.querySelector('header.header');
+let pageinationData = data;
 /*
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
@@ -21,8 +22,8 @@ This function will create and insert/append the elements needed to display a "pa
 
 
 function showPage(studentData, pageParam){
-   const startIndex = (pageParam * studentsPerPageCount) - studentsPerPageCount;
-   const endIndex = (pageParam * studentsPerPageCount);
+   const startIndex = (pageParam  * studentsPerPageCount) - studentsPerPageCount;
+   const endIndex = (pageParam  * studentsPerPageCount);
 
    const studentListDiv = document.querySelector('.student-list');
    studentListDiv.innerHTML = '';
@@ -47,46 +48,26 @@ function showPage(studentData, pageParam){
    }
 }
 
-function showPageII(studentData, pageParam){
-   const startIndex = (pageParam * studentsPerPageCount) - studentsPerPageCount;
-   const endIndex = (pageParam * studentsPerPageCount);
+function createSearchBar(){
+   const label = createElement('label','for:search','class:student-search');
+   const input = createElement('input','id:search','placeholder:Search by name...');
+   const button = createElement('button',);
+   const img = createElement('img', 'src:img/icn-search.svg','alt:Search icon');
 
-   const studentListDiv = document.querySelector('.student-list');
-   studentListDiv.innerHTML = '';
+   button.appendChild(img);
+   label.appendChild(input);
+   label.appendChild(button);
 
-   for(let i = 0; i < studentData.length; i++){
-      if(i >= startIndex && i < endIndex){
-        const student = studentData[i];
-
-        //create the needed DOM elements
-        const li = createElement('li','className|student-item cf');
-        const div = createElement('div','className|student-details');
-        const img = createElement('img', 'className|avatar',`src|${student.picture.large}`, `alt|${student.name.first}'s Profile Picture`);
-        const h3 = createElement('h3',`textContent|${student.name.first} ${student.name.last}`);
-        const span = createElement('span',`className|email`, `textContent|${student.email}`);
-        const joinedDiv = createElement('div','className|joined-details');
-        const dateSpan = createElement('span', 'className|date',`textContent|${student.registered.date}`);
-
-        //Stitch the elements together
-        li.appendChild(div);
-        div.appendChild(img);
-        div.appendChild(h3);
-        div.appendChild(span);
-
-        li.appendChild(joinedDiv);
-        joinedDiv.appendChild(dateSpan);
-        studentListDiv.appendChild(li);
-      }
-   }
+   headerDiv.appendChild(label);
 }
+
 //This function will create an html element and set properties as needed, can handle a variable number of arguments
-//const div2 = createElement('div','className|student-details');
 function createElement(elementType, variableArgumentList){
    let elem = document.createElement(elementType);
    for(var i in arguments){
       if(i > 0){
-         const args = arguments[i].split("|");
-         elem[args[0]] = args[1];
+         const args = arguments[i].split(":");
+         elem.setAttribute(args[0], args[1]);
       }
    }
    return elem;
@@ -96,8 +77,102 @@ function createElement(elementType, variableArgumentList){
 Create the `addPagination` function
 This function will create and insert/append the elements needed for the pagination buttons
 */
+function pagination(studentData){
+   const buttonCount = Math.ceil(studentData.length/studentsPerPageCount);
+   linkListUL.innerHTML = '';
+   for(let i = 1; i <=  buttonCount; i++){
+      const liElem = createElement('li');
+      const liButton = createElement('button','type:button');
+      liButton.textContent = i;
+      liElem.appendChild(liButton);
 
+      linkListUL.appendChild(liElem);
+   }
+   setActiveLinkButton(1);
+}
+//function search data 
+function searchData(inData, searchTerm){
+   const filteredStudentList = [];
+   for(let i = 0; i < inData.length; i++){
+      const firstNameMatch = inData[i].name.first.toLowerCase().indexOf(searchTerm.toLowerCase());
+      const lastNameMatch = inData[i].name.last.toLowerCase().indexOf(searchTerm.toLowerCase());
+      
+      if((+firstNameMatch != -1) || (+lastNameMatch != -1)){
+//         console.log('search: '+ searchTerm + ' ---- firstNameMatch: ' + firstNameMatch +' / ' + 'lastNameMatch: ' + lastNameMatch + ' : ' + inData[i].name.first.toLowerCase() +' ' + inData[i].name.last.toLowerCase());
+         filteredStudentList.push(inData[i]);
+      }
+   }
 
+   //resolve the error state
+   if(filteredStudentList.length > 0){
+      pageinationData = filteredStudentList;
+      showPage(filteredStudentList,1);
+      pagination(filteredStudentList);
+   } else {
+      const pageDiv = document.querySelector('.page');
+      let invalidSearchText = document.getElementById('search').value;
+      let clearPreviousErr = document.getElementById('error');
+      if(clearPreviousErr){
+         clearPreviousErr.remove();
+      }
+      const noResultsDiv = `<div id='error' class="no-results">No results found for the term "${invalidSearchText}". 
+               <br/>Please try again.</div>`;
+         pageDiv.children[2].insertAdjacentHTML('beforebegin', noResultsDiv);
 
+ //     pageinationData = data;
+//      showPage(pageinationData,1);
+//      pagination(pageinationData);
+
+   }
+}
+//sets active on needed button
+function setActiveLinkButton(itemToActivate){
+   //account for zero based indexing
+   itemToActivate --;
+   for(let i = 0; i < linkListUL.children.length; i++){
+      if(i === itemToActivate){
+         linkListUL.children[i].firstElementChild.className = 'active';
+      } else {
+         linkListUL.children[i].firstElementChild.className = '';
+      }
+   }
+}
+
+//added event listner on pagination buttons
+linkListUL.addEventListener('click', (event) => {
+   const elem = event.target;
+   if(elem.tagName === 'BUTTON'){
+      setActiveLinkButton(+elem.textContent);
+      showPage(pageinationData, +elem.textContent);
+   }
+});
+
+headerDiv.addEventListener('click', (event) => {
+   if(event.target.tagName === 'IMG'){
+      searchHelper(event);
+   }
+});
+headerDiv.addEventListener('keyup', (event) => {
+   if(event.target.tagName === 'INPUT'){
+      searchHelper(event);
+   }
+});
+
+function searchHelper(event){
+   const searchTerm = document.getElementById('search').value;
+   if(searchTerm){
+      searchData(data, searchTerm);
+   } else {
+      showPage(data,1);
+      pagination(data);
+   }
+}
 
 // Call functions
+createSearchBar();
+showPage(data,1);
+pagination(data);
+
+
+//Added listeners
+
