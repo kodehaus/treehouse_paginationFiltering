@@ -19,7 +19,7 @@ This function will create and insert/append the elements needed to display a "pa
 */
 
 
-
+//displays student information
 function showPage(studentData, pageParam){
    const startIndex = (pageParam  * studentsPerPageCount) - studentsPerPageCount;
    const endIndex = (pageParam  * studentsPerPageCount);
@@ -47,6 +47,8 @@ function showPage(studentData, pageParam){
    }
 }
 
+//creates the search bar ui
+// decided to dynamically create elements instead of using template literals
 function createSearchBar(){
    const label = createElement('label','for:search','class:student-search');
    const input = createElement('input','id:search','placeholder:Search by name...');
@@ -61,6 +63,7 @@ function createSearchBar(){
 }
 
 //This function will create an html element and set properties as needed, can handle a variable number of arguments
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments
 function createElement(elementType, variableArgumentList){
    let elem = document.createElement(elementType);
    for(var i in arguments){
@@ -76,7 +79,7 @@ function createElement(elementType, variableArgumentList){
 Create the `addPagination` function
 This function will create and insert/append the elements needed for the pagination buttons
 */
-function pagination(studentData){
+function addPagination(studentData){
    const buttonCount = Math.ceil(studentData.length/studentsPerPageCount);
    linkListUL.innerHTML = '';
    for(let i = 1; i <=  buttonCount; i++){
@@ -91,6 +94,7 @@ function pagination(studentData){
 }
 
 //function search data 
+//searchs for matched data or uses the full data set. Then sets the page page based on the results
 function searchData(displayPage){
    let filteredStudentList = [];
    const searchTerm = document.getElementById('search').value;
@@ -109,9 +113,12 @@ function searchData(displayPage){
    if(!displayPage){
       displayPage = 1;
    }
+   //always check to clear any leftover errors
    clearError();
+
+   //if no results are found no data will be displayed
    showPage(filteredStudentList, displayPage);
-   pagination(filteredStudentList);
+   addPagination(filteredStudentList);
    setActiveLinkButton(displayPage)
 
    //resolve the error state
@@ -123,6 +130,8 @@ function searchData(displayPage){
          pageDiv.children[2].insertAdjacentHTML('beforebegin', noResultsDiv);
    }
 }
+
+//Check if there is an error div and if so clear it
 function clearError(){
    let clearPreviousErr = document.getElementById('error');
    if(clearPreviousErr){
@@ -150,7 +159,6 @@ function setActiveLinkButton(itemToActivate){
 linkListUL.addEventListener('click', (event) => {
    const elem = event.target;
    if(elem.tagName === 'BUTTON'){
-//      setActiveLinkButton(+elem.textContent);
       searchData(+elem.textContent);
    }
 });
