@@ -90,25 +90,36 @@ function pagination(studentData){
    }
    setActiveLinkButton(1);
 }
+
 //function search data 
-function searchData(inData, searchTerm){
+function searchData(displayPage){
    clearError();
-   const filteredStudentList = [];
-   for(let i = 0; i < inData.length; i++){
-      const firstNameMatch = inData[i].name.first.toLowerCase().indexOf(searchTerm.toLowerCase());
-      const lastNameMatch = inData[i].name.last.toLowerCase().indexOf(searchTerm.toLowerCase());
-      
-      if((+firstNameMatch != -1) || (+lastNameMatch != -1)){
-//         console.log('search: '+ searchTerm + ' ---- firstNameMatch: ' + firstNameMatch +' / ' + 'lastNameMatch: ' + lastNameMatch + ' : ' + inData[i].name.first.toLowerCase() +' ' + inData[i].name.last.toLowerCase());
-         filteredStudentList.push(inData[i]);
+   let filteredStudentList = [];
+   const searchTerm = document.getElementById('search').value;
+   if(searchTerm){
+      for(let i = 0; i < data.length; i++){
+         const firstNameMatch = data[i].name.first.toLowerCase().indexOf(searchTerm.toLowerCase());
+         const lastNameMatch = data[i].name.last.toLowerCase().indexOf(searchTerm.toLowerCase());
+         
+         if((+firstNameMatch != -1) || (+lastNameMatch != -1)){
+   //         console.log('search: '+ searchTerm + ' ---- firstNameMatch: ' + firstNameMatch +' / ' + 'lastNameMatch: ' + lastNameMatch + ' : ' + inData[i].name.first.toLowerCase() +' ' + inData[i].name.last.toLowerCase());
+            filteredStudentList.push(data[i]);
+         }
       }
+   } else {
+      filteredStudentList = data;
+   }
+
+   if(!displayPage){
+      displayPage = 1;
    }
 
    //resolve the error state
    if(filteredStudentList.length > 0){
       pageinationData = filteredStudentList;
-      showPage(filteredStudentList,1);
+      showPage(filteredStudentList,displayPage);
       pagination(filteredStudentList);
+      setActiveLinkButton(displayPage)
    } else {
       const pageDiv = document.querySelector('.page');
       let invalidSearchText = document.getElementById('search').value;
@@ -143,36 +154,27 @@ function setActiveLinkButton(itemToActivate){
 linkListUL.addEventListener('click', (event) => {
    const elem = event.target;
    if(elem.tagName === 'BUTTON'){
-      setActiveLinkButton(+elem.textContent);
-      showPage(pageinationData, +elem.textContent);
+//      setActiveLinkButton(+elem.textContent);
+      searchData(+elem.textContent);
    }
 });
 
 headerDiv.addEventListener('click', (event) => {
    if(event.target.tagName === 'IMG'){
-      searchHelper(event);
+      searchData();
    }
 });
 headerDiv.addEventListener('keyup', (event) => {
    if(event.target.tagName === 'INPUT'){
-      searchHelper(event);
+      searchData();
    }
 });
 
-function searchHelper(event){
-   const searchTerm = document.getElementById('search').value;
-   if(searchTerm){
-      searchData(data, searchTerm);
-   } else {
-      showPage(data,1);
-      pagination(data);
-   }
-}
+
 
 // Call functions
 createSearchBar();
-showPage(data,1);
-pagination(data);
+searchData()
 
 
 //Added listeners
