@@ -13,7 +13,6 @@ For assistance:
 const studentsPerPageCount = 9;
 const linkListUL = document.querySelector('ul.link-list');
 const headerDiv = document.querySelector('header.header');
-let pageinationData = data;
 /*
 Create the `showPage` function
 This function will create and insert/append the elements needed to display a "page" of nine students
@@ -93,17 +92,14 @@ function pagination(studentData){
 
 //function search data 
 function searchData(displayPage){
-   clearError();
    let filteredStudentList = [];
    const searchTerm = document.getElementById('search').value;
    if(searchTerm){
       for(let i = 0; i < data.length; i++){
          const firstNameMatch = data[i].name.first.toLowerCase().indexOf(searchTerm.toLowerCase());
          const lastNameMatch = data[i].name.last.toLowerCase().indexOf(searchTerm.toLowerCase());
-         
          if((+firstNameMatch != -1) || (+lastNameMatch != -1)){
-   //         console.log('search: '+ searchTerm + ' ---- firstNameMatch: ' + firstNameMatch +' / ' + 'lastNameMatch: ' + lastNameMatch + ' : ' + inData[i].name.first.toLowerCase() +' ' + inData[i].name.last.toLowerCase());
-            filteredStudentList.push(data[i]);
+             filteredStudentList.push(data[i]);
          }
       }
    } else {
@@ -113,20 +109,18 @@ function searchData(displayPage){
    if(!displayPage){
       displayPage = 1;
    }
+   clearError();
+   showPage(filteredStudentList, displayPage);
+   pagination(filteredStudentList);
+   setActiveLinkButton(displayPage)
 
    //resolve the error state
-   if(filteredStudentList.length > 0){
-      pageinationData = filteredStudentList;
-      showPage(filteredStudentList,displayPage);
-      pagination(filteredStudentList);
-      setActiveLinkButton(displayPage)
-   } else {
+   if(filteredStudentList.length <= 0){
       const pageDiv = document.querySelector('.page');
       let invalidSearchText = document.getElementById('search').value;
       const noResultsDiv = `<div id='error' class="no-results">No results found for the term "${invalidSearchText}". 
                <br/>Please try again.</div>`;
          pageDiv.children[2].insertAdjacentHTML('beforebegin', noResultsDiv);
-
    }
 }
 function clearError(){
@@ -150,6 +144,8 @@ function setActiveLinkButton(itemToActivate){
    }
 }
 
+// Add event listners 
+//-----------------------------------------------------------------------------------------------------
 //added event listner on pagination buttons
 linkListUL.addEventListener('click', (event) => {
    const elem = event.target;
@@ -158,7 +154,6 @@ linkListUL.addEventListener('click', (event) => {
       searchData(+elem.textContent);
    }
 });
-
 headerDiv.addEventListener('click', (event) => {
    if(event.target.tagName === 'IMG'){
       searchData();
@@ -176,6 +171,4 @@ headerDiv.addEventListener('keyup', (event) => {
 createSearchBar();
 searchData()
 
-
-//Added listeners
 
