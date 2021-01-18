@@ -92,6 +92,7 @@ function pagination(studentData){
 }
 //function search data 
 function searchData(inData, searchTerm){
+   clearError();
    const filteredStudentList = [];
    for(let i = 0; i < inData.length; i++){
       const firstNameMatch = inData[i].name.first.toLowerCase().indexOf(searchTerm.toLowerCase());
@@ -111,20 +112,20 @@ function searchData(inData, searchTerm){
    } else {
       const pageDiv = document.querySelector('.page');
       let invalidSearchText = document.getElementById('search').value;
-      let clearPreviousErr = document.getElementById('error');
-      if(clearPreviousErr){
-         clearPreviousErr.remove();
-      }
       const noResultsDiv = `<div id='error' class="no-results">No results found for the term "${invalidSearchText}". 
                <br/>Please try again.</div>`;
          pageDiv.children[2].insertAdjacentHTML('beforebegin', noResultsDiv);
 
- //     pageinationData = data;
-//      showPage(pageinationData,1);
-//      pagination(pageinationData);
-
    }
 }
+function clearError(){
+   let clearPreviousErr = document.getElementById('error');
+   if(clearPreviousErr){
+      clearPreviousErr.remove();
+   }
+
+}
+
 //sets active on needed button
 function setActiveLinkButton(itemToActivate){
    //account for zero based indexing
