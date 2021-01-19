@@ -113,7 +113,7 @@ function searchData(displayPage){
    if(!displayPage){
       displayPage = 1;
    }
-   //always check to clear any leftover errors
+   //always check to clear any leftover error displays
    clearError();
 
    //if no results are found no data will be displayed
@@ -121,17 +121,21 @@ function searchData(displayPage){
    addPagination(filteredStudentList);
    setActiveLinkButton(displayPage)
 
-   //resolve the error state
+   //display an error screen if needed
    if(filteredStudentList.length <= 0){
-      const pageDiv = document.querySelector('.page');
-      let invalidSearchText = document.getElementById('search').value;
-      const noResultsDiv = `<div id='error' class="no-results">No results found for the term "${invalidSearchText}". 
-               <br/>Please try again.</div>`;
-         pageDiv.children[2].insertAdjacentHTML('beforebegin', noResultsDiv);
+      const errString = `No results found for the term <b>"${document.getElementById('search').value}"</b>. <br/>Please try again.`;
+      displayErrorPage(errString, 'no-results');
    }
 }
 
-//Check if there is an error div and if so clear it
+//display an error screen
+function displayErrorPage(message, classString){
+   const pageDiv = document.querySelector('.page');
+   const noResultsDiv = `<div id='error' class="${classString}">${message}</div>`;
+   pageDiv.children[2].insertAdjacentHTML('beforebegin', noResultsDiv);
+}
+
+//Check if there is an error screen and if so clear it
 function clearError(){
    let clearPreviousErr = document.getElementById('error');
    if(clearPreviousErr){
@@ -162,11 +166,15 @@ linkListUL.addEventListener('click', (event) => {
       searchData(+elem.textContent);
    }
 });
+
+//event listner for search icon
 headerDiv.addEventListener('click', (event) => {
    if(event.target.tagName === 'IMG'){
       searchData();
    }
 });
+
+//event listener for search input box
 headerDiv.addEventListener('keyup', (event) => {
    if(event.target.tagName === 'INPUT'){
       searchData();
